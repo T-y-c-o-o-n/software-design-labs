@@ -52,7 +52,7 @@ public class LinkedList<T, R> {
     }
 
     static class Node<T, R> {
-        private T key;
+        private final T key;
         private R value;  // null means first or last
         private Node<T, R> prev;
         private Node<T, R> next;
