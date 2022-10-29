@@ -1,6 +1,7 @@
 package lru;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import static lru.LinkedList.Node;
 
@@ -25,6 +26,9 @@ public class LRUCacheImpl<T, R> implements LRUCache<T, R> {
         if (node != null) {
             linkedList.cut(node);
             linkedList.putFirst(node);
+
+            assert node.equals(linkedList.first());
+
             return node.getValue();
         }
         return null;
@@ -32,25 +36,35 @@ public class LRUCacheImpl<T, R> implements LRUCache<T, R> {
 
     @Override
     public void put(T key, R value) {
+        assert value != null;
+
         Node<T, R> node = keyToNode.get(key);
         if (node != null) {
+            assert Objects.equals(node.getKey(), key);
             node.setValue(value);
-            if (linkedList.first() == node) {
-                // node is already the first one
-                return;
+
+            if (linkedList.first() != node) {
+                linkedList.cut(node);
+                linkedList.putFirst(node);
+
+                assert node.equals(linkedList.first());
             }
-            linkedList.cut(node);
-            linkedList.putFirst(node);
+
             return;
         } else {
             if (keyToNode.size() == maxSize) {
                 Node<T, R> last = linkedList.last();
                 linkedList.cut(last);
+
+                assert linkedList.isEmpty() || !linkedList.last().equals(last);
+
                 keyToNode.remove(last.getKey());
             }
             node = new Node<>(key, value);
             keyToNode.put(key, node);
         }
+
         linkedList.putFirst(node);
+        assert node.equals(linkedList.first());
     }
 }

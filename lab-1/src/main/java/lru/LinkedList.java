@@ -13,23 +13,21 @@ public class LinkedList<T, R> {
 
     Node<T, R> first() {
         Node<T, R> firstDummyNext = firstDummy.next;
-        if (firstDummyNext == lastDummy) {
-            throw new IndexOutOfBoundsException("Size = 0");
-        }
+        assert firstDummyNext != lastDummy;
         return firstDummyNext;
     }
 
     Node<T, R> last() {
         Node<T, R> lastDummyPrev = lastDummy.prev;
-        if (firstDummy == lastDummyPrev) {
-            throw new IndexOutOfBoundsException("Size = 0");
-        }
+        assert firstDummy != lastDummyPrev;
         return lastDummyPrev;
     }
 
     void cut(Node<T, R> node) {
         node.prev.next = node.next;
         node.next.prev = node.prev;
+        node.next = null;
+        node.prev = null;
     }
 
     void putFirst(Node<T, R> node) {
@@ -38,6 +36,10 @@ public class LinkedList<T, R> {
         node.next = next;
         firstDummy.next = node;
         node.prev = firstDummy;
+    }
+
+    boolean isEmpty() {
+        return firstDummy.next == lastDummy;
     }
 
     // Just for debugging
