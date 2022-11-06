@@ -111,6 +111,8 @@ public class QueryServlet extends HttpServlet {
         } else {
             htmlResponseWriter.addHtml("Unknown command: " + command);
         }
+
+        htmlResponseWriter.write();
     }
 
 }
