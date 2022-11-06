@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
+import ru.akirakozov.sd.refactoring.html.HtmlResponseWriter;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +14,8 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class AddProductServlet extends HttpServlet {
+
+    HtmlResponseWriter htmlResponseWriter = new HtmlResponseWriter();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -30,8 +34,8 @@ public class AddProductServlet extends HttpServlet {
             throw new RuntimeException(e);
         }
 
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("OK");
+        htmlResponseWriter.setResponse(response);
+        htmlResponseWriter.addHtml("OK");
+        htmlResponseWriter.write();
     }
 }
