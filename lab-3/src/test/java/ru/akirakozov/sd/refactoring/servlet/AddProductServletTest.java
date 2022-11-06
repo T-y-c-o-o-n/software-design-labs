@@ -5,7 +5,6 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.MultiMap;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -14,6 +13,8 @@ public class AddProductServletTest {
     @Test
     public void processRequestTest() throws IOException {
         AddProductServlet servlet = new AddProductServlet();
+        MockHtmlResponseWriter mockHtmlResponseWriter = new MockHtmlResponseWriter();
+        servlet.htmlResponseWriter = mockHtmlResponseWriter;
 
         Request request = new Request(null, null);
         MultiMap<String> parameters = new MultiMap<>();
@@ -26,9 +27,6 @@ public class AddProductServletTest {
 
         servlet.doGet(request, response);
 
-        String contentType = response.getContentType();
-        int status = response.getStatus();
-        assertEquals("text/html", contentType);
-        assertEquals(HttpServletResponse.SC_OK, status);
+        assertEquals(Utils.joinLines("OK"), mockHtmlResponseWriter.getHtml());
     }
 }
