@@ -48,7 +48,7 @@ public class QueryServlet extends HttpServlet {
         } else if ("count".equals(command)) {
             htmlResponseWriter.addHtml("<html><body>");
             htmlResponseWriter.addHtml("Number of products: ");
-            int count = productDB.sumProducts();
+            int count = productDB.countProducts();
             htmlResponseWriter.addHtml(Integer.toString(count));
             htmlResponseWriter.addHtml("</body></html>");
         } else {

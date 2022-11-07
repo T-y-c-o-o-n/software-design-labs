@@ -1,14 +1,25 @@
 package ru.akirakozov.sd.refactoring.db;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ProductDB {
+
+    public void createProductsTable() throws SQLException {
+        try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+            String sql = "CREATE TABLE IF NOT EXISTS PRODUCT" +
+                "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                " NAME           TEXT    NOT NULL, " +
+                " PRICE          INT     NOT NULL)";
+            Statement stmt = c.createStatement();
+
+            stmt.executeUpdate(sql);
+            stmt.close();
+        }
+
+    }
 
     public List<Product> listProducts() {
         List<Product> products = new ArrayList<>();
