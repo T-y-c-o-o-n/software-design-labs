@@ -2,9 +2,9 @@ package ru.akirakozov.sd.refactoring.db;
 
 public class Product {
     private final String name;
-    private final long price;
+    private final int price;
 
-    public Product(String name, long price) {
+    public Product(String name, int price) {
         this.name = name;
         this.price = price;
     }
@@ -13,7 +13,7 @@ public class Product {
         return name;
     }
 
-    public long getPrice() {
+    public int getPrice() {
         return price;
     }
 }
