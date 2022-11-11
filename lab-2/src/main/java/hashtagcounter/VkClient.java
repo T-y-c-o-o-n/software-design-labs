@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 public class VkClient {
-    private VkApiClient vk;
+    private final VkApiClient vk;
 
     public VkClient() {
         TransportClient transportClient = new HttpTransportClient();
