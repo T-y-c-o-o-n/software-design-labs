@@ -30,7 +30,7 @@ public class HashTagCounterTest {
         String tag = "tag";
         int hoursAgo = 3;
         List<Integer> expectedCounts = new ArrayList<>();
-        for (int i = 1; i <= hoursAgo; ++i) {
+        for (int i = hoursAgo; i >= 1; --i) {
             int count = i * i;
             when(client.count(tag, i))
                 .thenReturn(count);

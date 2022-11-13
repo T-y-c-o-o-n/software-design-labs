@@ -18,7 +18,7 @@ public class HashTagCounter {
             throw new IllegalArgumentException("lastHours must be >= 1 and <= 24");
         }
         List<Integer> counts = new ArrayList<>();
-        for (int hoursAgo = 1; hoursAgo <= lastHours; ++hoursAgo) {
+        for (int hoursAgo = lastHours; hoursAgo >= 1; --hoursAgo) {
             int count = vkClient.count(hashTag, hoursAgo);
             counts.add(count);
         }
@@ -26,7 +26,12 @@ public class HashTagCounter {
     }
 
     public static void main(String[] args) throws ClientException, ApiException {
-        List<Integer> counts = new HashTagCounter(new VkClient()).hashTagCountPerLastHours("", 3);
+        List<Integer> counts = new HashTagCounter(
+            new VkClient(
+                Integer.parseInt(System.getenv("APP_ID")),
+                System.getenv("ACCESS_TOKEN")
+            )
+        ).hashTagCountPerLastHours("Россия", 24);
         for (int count : counts) {
             System.out.println(count);
         }
