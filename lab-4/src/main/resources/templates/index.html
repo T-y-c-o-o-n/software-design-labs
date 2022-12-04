@@ -1,0 +1,70 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+    <title>Add question</title>
+</head>
+<body>
+
+<h3>Task lists</h3>
+<form method="GET" action="/get-task-lists">
+</form>
+
+<table>
+    <th:block th:each="tasklist : ${tasklists}">
+        <div th:style="${'border-style: solid; border-color: red;'}">
+            <h1 th:style="'background: blue'" th:text="${tasklist.getName()}"/>
+            <table>
+                <th:block th:each="task, state : ${tasklist.getTasks()}">
+                    <tr th:style="${state.index % 2 == 0 ? 'background: grey;' : 'background: blue;'}">
+                        <td th:text="${task.getName()}" th:marginwidth="4px"/>
+                        <td th:text="${task.getDescription()}" th:marginwidth="4px"/>
+                        <td th:style="${task.isDone() ? 'background: green;' : 'background: red;'}" th:text="${task.isDone()}" th:marginwidth="4px"/>
+                        <td th:marginwidth="4px">
+                            <form th:object="${dotask}" method="POST" action="/do-task">
+                                <input hidden class="form-control"
+                                       type="text"
+                                       th:value="${tasklist.name}" name="taskListName" />
+                                <input hidden class="form-control"
+                                       type="text"
+                                       th:value="${task.name}" id="taskName" name="taskName" />
+                                <button th:text="${task.isDone()} ? 'Undo' : 'Do'" type="submit"></button>
+                            </form>
+                        </td>
+                    </tr>
+                </th:block>
+            </table>
+
+            <h3>Add new task</h3>
+            <form th:object="${tasktolist}" method="POST" action="/add-task-to-list">
+                <table>
+                    <tr>
+                        <td><label>Name:</label></td>
+                        <td><input type="text" th:field="*{taskName}"/></td>
+                        <td><label>Description:</label></td>
+                        <td><input type="text" th:field="*{taskDesc}"/></td>
+                        <input hidden class="form-control"
+                               type="text"
+                               th:value="${tasklist.name}" name="taskListName" />
+                    </tr>
+                </table>
+
+                <input type="submit" value="add">
+            </form>
+        </div>
+    </th:block>
+</table>
+
+<h3>Add new task list</h3>
+<form th:object="${tasklist}" method="POST" action="/add-task-list">
+    <table>
+        <tr>
+            <td><label>Name:</label></td>
+            <td><input type="text" th:field="*{name}"/></td>
+        </tr>
+    </table>
+
+    <input type="submit" value="add">
+</form>
+
+</body>
+</html>
