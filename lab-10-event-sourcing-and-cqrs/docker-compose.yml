@@ -4,12 +4,15 @@ services:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-#    ports:
-#      - '5432:5432'
+      POSTGRES_DB: "fitness"
+      POSTGRES_USER: "fitness-user"
+      POSTGRES_PASSWORD: "io0Jae0oOhl7eeF5"
+      PGDATA: /data/postgres
+    ports:
+      - '5431:5432'
     volumes:
-      - db:/var/lib/postgresql/data
+      - postgres:/data/postgres
+      - ./scripts/ddl.sql:/docker-entrypoint-initdb.d/ddl.sql
+
 volumes:
-  db:
-    driver: local
+  postgres:
