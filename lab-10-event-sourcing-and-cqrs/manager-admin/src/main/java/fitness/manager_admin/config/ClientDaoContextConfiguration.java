@@ -1,7 +1,7 @@
 package fitness.manager_admin.config;
 
 import fitness.manager_admin.dao.ClientDao;
-import fitness.manager_admin.service.ClientService;
+import fitness.manager_admin.dao.SubscriptionDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +27,8 @@ public class ClientDaoContextConfiguration {
     private String password;
 
     @Bean
-    public ClientService clientService(ClientDao clientDao) {
-        return new ClientService(clientDao);
+    public SubscriptionDao subscriptionDao(DataSource dataSource) {
+        return new SubscriptionDao(dataSource);
     }
 
     @Bean
