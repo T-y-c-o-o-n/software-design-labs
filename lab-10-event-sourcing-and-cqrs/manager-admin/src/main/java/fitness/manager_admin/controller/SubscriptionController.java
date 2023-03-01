@@ -18,7 +18,12 @@ public class SubscriptionController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void addSubscription(@RequestParam int clientId) {
-        subscriptionDao.addSubscription(clientId);
+    public void addSubscription(@RequestParam int clientId, @RequestParam int days) {
+        subscriptionDao.addSubscription(clientId, days);
+    }
+
+    @RequestMapping(value = "/extend", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void extendSubscription(@RequestParam int subscriptionId, @RequestParam int days) {
+        subscriptionDao.extendSubscription(subscriptionId, days);
     }
 }

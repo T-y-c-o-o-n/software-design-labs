@@ -15,27 +15,60 @@ public class SubscriptionDao extends JdbcDaoSupport {
         setDataSource(dataSource);
     }
 
-    public int addSubscription(int clientId) {
+    public List<Subscription> listSubscriptionsByClientId(int clientId) {
+        String sql = """
+                SELECT subscription_id, max(until) as until
+                FROM Subscriptions
+                natural left join SubscriptionEvents
+                where client_id = ?
+                GROUP BY subscription_id
+            """;
+        JdbcTemplate jdbcTemplate = getJdbcTemplate();
+        if (jdbcTemplate == null) {
+            throw new RuntimeException("jdbcTemplate is null");
+        }
+        List<Subscription> query = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Subscription.class), clientId);
+        return query;
+    }
+
+    public int addSubscription(int clientId, int days) {
         String sql = "INSERT INTO subscriptions (client_id) VALUES (?)";
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
         if (jdbcTemplate == null) {
             throw new RuntimeException("jdbcTemplate is null");
         }
-        return jdbcTemplate.update(sql, new BeanPropertyRowMapper<>(Subscription.class), clientId);
+        jdbcTemplate.update(sql, clientId);
+
+        sql = """
+                INSERT INTO subscriptionevents (subscription_id, extension_of_existed, time, until)
+                VALUES (
+                    (SELECT subscriptions.subscription_id FROM subscriptions WHERE client_id = ? ORDER BY time DESC LIMIT 1),
+                    false,
+                    now(),
+                    (SELECT CURRENT_DATE + ?)
+                )
+            """;
+        jdbcTemplate = getJdbcTemplate();
+        if (jdbcTemplate == null) {
+            throw new RuntimeException("jdbcTemplate is null");
+        }
+        return jdbcTemplate.update(sql, clientId, days);
     }
 
-    public List<Subscription> listSubscriptionsByClientId(int clientId) {
+    public int extendSubscription(int subscriptionId, int days) {
         String sql = """
-            SELECT subscription_id, max(until)
-            FROM Subscriptions
-            natural left join SubscriptionEvents
-            where client_id = ?
-            GROUP BY subscription_id
-        """;
+                INSERT INTO subscriptionevents (subscription_id, extension_of_existed, time, until)
+                VALUES (
+                    ?,
+                    true,
+                    now(),
+                    ((SELECT max(until) FROM subscriptionevents WHERE subscription_id = ?) + ?)
+                )
+            """;
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
         if (jdbcTemplate == null) {
             throw new RuntimeException("jdbcTemplate is null");
         }
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Subscription.class), clientId);
+        return jdbcTemplate.update(sql, subscriptionId, subscriptionId, days);
     }
 }
