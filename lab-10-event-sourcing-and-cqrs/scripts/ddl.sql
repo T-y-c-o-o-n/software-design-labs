@@ -44,6 +44,8 @@ create table TurnstileEvents
 --  Считаю, что турникет пропускает абонемент (пластиковую карту например, или штрих код в приложении)
     subscription_id int       not null,
     time            timestamp not null,
+--  Для out событий - время входа
+    previous_time   timestamp,
 
     constraint SubscriptionEvents_P1 primary key (subscription_id, time),
     constraint SubscriptionEvents_FK1 foreign key (subscription_id) references Subscriptions (subscription_id)

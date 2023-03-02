@@ -1,2 +1,11 @@
-package fitness.report_service;public class ReportServiceApp {
+package fitness.report_service;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ReportServiceApp {
+    public static void main(String[] args) {
+        SpringApplication.run(ReportServiceApp.class, args);
+    }
 }
