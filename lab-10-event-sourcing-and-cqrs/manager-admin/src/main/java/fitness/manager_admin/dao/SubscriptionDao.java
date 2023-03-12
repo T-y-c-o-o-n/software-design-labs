@@ -42,7 +42,7 @@ public class SubscriptionDao extends JdbcDaoSupport {
         sql = """
                 INSERT INTO subscriptionevents (subscription_id, extension_of_existed, time, until)
                 VALUES (
-                    (SELECT subscriptions.subscription_id FROM subscriptions WHERE client_id = ? ORDER BY time DESC LIMIT 1),
+                    (SELECT subscriptions.subscription_id FROM subscriptions WHERE client_id = ? ORDER BY subscription_id DESC LIMIT 1),
                     false,
                     now(),
                     (SELECT CURRENT_DATE + ?)

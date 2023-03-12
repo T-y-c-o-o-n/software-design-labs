@@ -3,9 +3,10 @@ package fitness.manager_admin.model;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Client {
-    private int id;
+    private int clientId;
     private String name;
     @Nullable
     private List<Subscription> subscriptions;
@@ -14,16 +15,16 @@ public class Client {
     }
 
     public Client(int id, String name) {
-        this.id = id;
+        this.clientId = id;
         this.name = name;
     }
 
-    public int getId() {
-        return id;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     public String getName() {
@@ -41,5 +42,18 @@ public class Client {
 
     public void setSubscriptions(@Nullable List<Subscription> subscriptions) {
         this.subscriptions = subscriptions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return clientId == client.clientId && Objects.equals(name, client.name) && Objects.equals(subscriptions, client.subscriptions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientId, name, subscriptions);
     }
 }

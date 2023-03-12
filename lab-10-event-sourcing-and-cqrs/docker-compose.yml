@@ -14,5 +14,8 @@ services:
       - postgres:/data/postgres
       - ./scripts/ddl.sql:/docker-entrypoint-initdb.d/ddl.sql
 
+  manager-admin:
+    image:
+
 volumes:
   postgres:
