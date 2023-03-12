@@ -1,46 +1,36 @@
 package akka.search.actors;
 
-import akka.actor.UntypedActor;
-import akka.search.exceptions.SearchRequestException;
-import akka.search.message.ResultMessage;
-import akka.search.message.SearchMessage;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.StringBufferInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class YandexSearchActor extends UntypedActor {
+import static akka.search.Main.YANDEX_PATH;
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+public class YandexSearchActor extends ChildActor {
 
     @Override
-    public void postStop() throws Exception {
-        getContext().parent().tell(new ResultMessage("error"), getSelf());
+    protected String getPath(String query) {
+        return YANDEX_PATH;
     }
 
     @Override
-    public void onReceive(Object o) throws Throwable {
-        if (o instanceof SearchMessage message) {
-            String query = message.getQuery();
-            HttpResponse<String> response = httpClient.send(
-                HttpRequest.newBuilder()
-                    .GET()
-                    .uri(URI.create("https://yandex.ru/search/?text=" + query))
-                    .build(),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
-            );
-            System.out.println(response.statusCode());
-            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                getSender().tell(
-                    new ResultMessage(response.body()),
-                    getSelf()
-                );
-            } else {
-                throw new SearchRequestException();
-            }
+    protected List<String> parseResponse(String response) throws Exception {
+        List<String> results = new ArrayList<>();
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = builder.parse(new StringBufferInputStream(response));
+        doc.normalizeDocument();
+        NodeList urlNodes = doc.getElementsByTagName("url");
+        for (int i = 0; i < urlNodes.getLength(); i++) {
+            Node item = urlNodes.item(i);
+            results.add(item.getTextContent().trim());
         }
+        return results;
     }
 }

@@ -1,4 +1,6 @@
 package akka.search.message;
 
-public record ResultMessage(String result) {
+import java.util.List;
+
+public record ResultMessage(List<String> results) {
 }

@@ -1,46 +1,29 @@
 package akka.search.actors;
 
-import akka.actor.UntypedActor;
-import akka.search.exceptions.SearchRequestException;
-import akka.search.message.ResultMessage;
-import akka.search.message.SearchMessage;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GoogleSearchActor extends UntypedActor {
-
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+public class GoogleSearchActor extends ChildActor {
 
     @Override
-    public void postStop() throws Exception {
-        getContext().parent().tell(new ResultMessage("error"), getSelf());
+    protected String getPath(String query) {
+        return "https://www.googleapis.com/customsearch/v1?key=AIzaSyAlpGewYJUA7CBkSfvcf3SGISach2Uq190&cx=d6ba835d3525a48b2&num=5&q=" + query;
     }
 
     @Override
-    public void onReceive(Object o) throws Throwable {
-        if (o instanceof SearchMessage message) {
-            String query = message.getQuery();
-            HttpResponse<String> response = httpClient.send(
-                HttpRequest.newBuilder()
-                    .GET()
-                    .uri(URI.create("https://yandex.ru/search/?text=" + query))
-                    .build(),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
-            );
-            System.out.println(response.statusCode());
-            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                getSender().tell(
-                    new ResultMessage(response.body()),
-                    getSelf()
-                );
-            } else {
-                throw new SearchRequestException();
-            }
+    protected List<String> parseResponse(String response) {
+        List<String> results = new ArrayList<>();
+        JsonParser jsonParser = new JsonParser();
+        JsonElement element = jsonParser.parse(response);
+        JsonArray items = element.getAsJsonObject().get("items").getAsJsonArray();
+        for (int i = 0; i < items.size(); i++) {
+            String link = items.get(i).getAsJsonObject().get("link").getAsString();
+            results.add(link);
         }
+        return results;
     }
 }
